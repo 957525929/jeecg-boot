@@ -62,10 +62,6 @@
           <a-icon type="cluster"/>
           <span>切换部门</span>
         </a-menu-item>
-        <a-menu-item key="6" @click="clearCache">
-          <a-icon type="sync"/>
-          <span>清理缓存</span>
-        </a-menu-item>
        <!-- <a-menu-item key="2" disabled>
           <a-icon type="setting"/>
           <span>测试</span>
@@ -98,9 +94,7 @@
   import DepartSelect from './DepartSelect'
   import { mapActions, mapGetters,mapState } from 'vuex'
   import { mixinDevice } from '@/utils/mixin.js'
-  import { getFileAccessHttpUrl,getAction } from "@/api/manage"
-  import Vue from 'vue'
-  import { UI_CACHE_DB_DICT_DATA } from "@/store/mutation-types"
+  import { getFileAccessHttpUrl } from "@/api/manage"
 
   export default {
     name: "UserMenu",
@@ -132,15 +126,6 @@
       let lists = []
       this.searchMenus(lists,this.permissionMenuList)
       this.searchMenuOptions=[...lists]
-    },
-    mounted() {
-      //如果是单点登录模式
-      if (process.env.VUE_APP_SSO == 'true') {
-        let depart = this.userInfo().orgCode
-        if (!depart) {
-          this.updateCurrentDepart()
-        }
-      }
     },
     computed: {
       ...mapState({
@@ -183,10 +168,8 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
-              // update-begin author:wangshuai date:20200601 for: 退出登录跳转登录页面
-              that.$router.push({ path: '/user/login' });
-              window.location.reload()
-              // update-end author:wangshuai date:20200601 for: 退出登录跳转登录页面
+                window.location.href="/";
+              //window.location.reload()
             }).catch(err => {
               that.$message.error({
                 title: '错误',
@@ -225,40 +208,15 @@
       // update_begin author:sunjianlei date:20191230 for: 解决外部链接打开失败的问题
       searchMethods(value) {
         let route = this.searchMenuOptions.filter(item => item.id === value)[0]
-        //update-begin-author:taoyan date:20210528 for: 【菜单问题】配置一个iframe地址的菜单，内部打开，在搜索菜单上打开却新开了一个窗口
-        if (route.meta.internalOrExternal === true) {
+        if (route.meta.internalOrExternal === true || route.component.includes('layouts/IframePageView')) {
           window.open(route.meta.url, '_blank')
         } else {
-          if(route.component.includes('layouts/IframePageView')){
-            this.$router.push(route)
-          }else{
-            this.$router.push({ path: route.path })
-          }
+          this.$router.push({ path: route.path })
         }
-        //update-end-author:taoyan date:20210528 for: 【菜单问题】配置一个iframe地址的菜单，内部打开，在搜索菜单上打开却新开了一个窗口
         this.searchMenuVisible = false
-      },
+      }
       // update_end author:sunjianlei date:20191230 for: 解决外部链接打开失败的问题
       /*update_end author:zhaoxin date:20191129 for: 做头部菜单栏导航*/
-      /*update_begin author:liushaoqian date:20200507 for: 刷新缓存*/
-      clearCache(){
-        getAction("sys/dict/refleshCache").then((res) => {
-          if (res.success) {
-            //重新加载缓存
-            getAction("sys/dict/queryAllDictItems").then((res) => {
-              if (res.success) {
-                Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
-                Vue.ls.set(UI_CACHE_DB_DICT_DATA, res.result, 7 * 24 * 60 * 60 * 1000)
-              }
-            })
-            this.$message.success("刷新缓存完成！");
-          }
-        }).catch(e=>{
-          this.$message.warn("刷新缓存失败！");
-          console.log("刷新失败",e)
-        })
-      }
-      /*update_end author:liushaoqian date:20200507 for: 刷新缓存*/
     }
   }
 </script>

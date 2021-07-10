@@ -1,19 +1,20 @@
 <template>
   <div>
     <a-modal
-      :title="fileType === 'image' ? '图片上传' : '文件上传'"
+      title="文件上传"
       :width="width"
       :visible="visible"
       @ok="ok"
       cancelText="取消"
       @cancel="close">
       <!--style="top: 20px;"-->
-      <j-upload :file-type="fileType" :value="filePath" @change="handleChange" :disabled="disabled" :number="number"></j-upload>
+      <j-upload :file-type="fileType" :value="filePath" @change="handleChange" :disabled="disabled"></j-upload>
     </a-modal>
   </div>
 </template>
 
 <script>
+  import JUpload from '@/components/jeecg/JUpload'
   import { getFileAccessHttpUrl } from '@/api/manage';
 
   const getFileName=(path)=>{
@@ -26,7 +27,7 @@
 
   export default {
     name: 'JFilePop',
-    components: { },
+    components: { JUpload },
     props:{
       title:{
         type:String,
@@ -58,11 +59,6 @@
         type:Boolean,
         default:false,
         required:false
-      },
-      number:{
-        type:Number,
-        required:false,
-        default: 0
       }
     },
     data(){

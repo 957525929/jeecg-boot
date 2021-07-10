@@ -12,7 +12,7 @@
 
     <a-upload
       name="file"
-      :multiple="multiple"
+      :multiple="true"
       :action="uploadAction"
       :headers="headers"
       :data="{'biz':bizPath}"
@@ -135,10 +135,6 @@
         required:false,
         default: true
       },
-      multiple: {
-        type: Boolean,
-        default: true
-      },
     },
     watch:{
       value:{
@@ -229,13 +225,7 @@
         let arr = [];
 
         for(var a=0;a<uploadFiles.length;a++){
-          // update-begin-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
-          if(uploadFiles[a].status === 'done' ) {
-            arr.push(uploadFiles[a].response.message)
-          }else{
-            return;
-          }
-          // update-end-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
+          arr.push(uploadFiles[a].response.message)
         }
         if(arr.length>0){
           path = arr.join(",")
@@ -289,18 +279,12 @@
             //returnUrl为false时返回文件名称、文件路径及文件大小
             this.newFileList = [];
             for(var a=0;a<fileList.length;a++){
-              // update-begin-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
-              if(fileList[a].status === 'done' ) {
-                var fileJson = {
-                  fileName:fileList[a].name,
-                  filePath:fileList[a].response.message,
-                  fileSize:fileList[a].size
-                };
-                this.newFileList.push(fileJson);
-              }else{
-                return;
-              }
-              // update-end-author:lvdandan date:20200603 for:【TESTA-514】【开源issue】多个文件同时上传时，控制台报错
+              var fileJson = {
+                fileName:fileList[a].name,
+                filePath:fileList[a].response.message,
+                fileSize:fileList[a].size
+              };
+              this.newFileList.push(fileJson);
             }
             this.$emit('change', this.newFileList);
           }
@@ -378,17 +362,14 @@
     },
     mounted(){
       const moverObj = document.getElementById(this.containerId+'-mover');
-      if(moverObj){
-        moverObj.addEventListener('mouseover',()=>{
-          this.moverHold = true
-          this.moveDisplay = 'block';
-        });
-        moverObj.addEventListener('mouseout',()=>{
-          this.moverHold = false
-          this.moveDisplay = 'none';
-        });
-      }
-    
+      moverObj.addEventListener('mouseover',()=>{
+        this.moverHold = true
+        this.moveDisplay = 'block';
+      });
+      moverObj.addEventListener('mouseout',()=>{
+        this.moverHold = false
+        this.moveDisplay = 'none';
+      });
       let picList = document.getElementById(this.containerId)?document.getElementById(this.containerId).getElementsByClassName('ant-upload-list-picture-card'):[];
       if(picList && picList.length>0){
         picList[0].addEventListener('mouseover',(ev)=>{

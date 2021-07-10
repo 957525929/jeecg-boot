@@ -5,7 +5,7 @@
     showSearch
     labelInValue
     :disabled="disabled"
-    :getPopupContainer="getParentContainer"
+    :getPopupContainer="(node) => node.parentNode"
     @search="loadData"
     :placeholder="placeholder"
     v-model="selectedAsyncValue"
@@ -21,7 +21,7 @@
 
   <a-select
     v-else
-    :getPopupContainer="getParentContainer"
+    :getPopupContainer="(node) => node.parentNode"
     showSearch
     :disabled="disabled"
     :placeholder="placeholder"
@@ -55,21 +55,7 @@
         type:String,
         default:"请选择",
         required:false
-      },
-      popContainer:{
-        type:String,
-        default:'',
-        required:false
-      },
-      pageSize:{
-        type: Number,
-        default: 10,
-        required: false
-      },
-      getPopupContainer: {
-        type:Function,
-        default: null
-      },
+      }
     },
     data(){
       this.loadData = debounce(this.loadData, 800);//消抖
@@ -104,14 +90,6 @@
         handler(){
           this.initDictData()
         }
-      },
-      'dictOptions':{
-        deep: true,
-        handler(val){
-          if(val && val.length>0){
-            this.options = [...val]
-          }
-        }
       }
     },
     methods:{
@@ -140,7 +118,7 @@
         this.options = []
         this.loading=true
         // 字典code格式：table,text,code
-        getAction(`/sys/dict/loadDict/${this.dict}`,{keyword:value, pageSize: this.pageSize}).then(res=>{
+        getAction(`/sys/dict/loadDict/${this.dict}`,{keyword:value}).then(res=>{
           this.loading=false
           if(res.success){
             if(currentLoad!=this.lastLoad){
@@ -185,17 +163,6 @@
                 })
             }
           }
-        }else{
-          //异步一开始也加载一点数据
-          this.loading=true
-          getAction(`/sys/dict/loadDict/${this.dict}`,{pageSize: this.pageSize, keyword:''}).then(res=>{
-            this.loading=false
-            if(res.success){
-              this.options = res.result
-            }else{
-              this.$message.warning(res.message)
-            }
-          })
         }
       },
       filterOption(input, option) {
@@ -207,18 +174,9 @@
         this.callback()
       },
       handleAsyncChange(selectedObj){
-        //update-begin-author:scott date:20201222 for:【搜索】搜索查询组件，删除条件，默认下拉还是上次的缓存数据，不好 JT-191
-        if(selectedObj){
-          this.selectedAsyncValue = selectedObj
-          this.selectedValue = selectedObj.key
-        }else{
-          this.selectedAsyncValue = null
-          this.selectedValue = null
-          this.options = null
-          this.loadData("")
-        }
+        this.selectedAsyncValue = selectedObj
+        this.selectedValue = selectedObj.key
         this.callback()
-        //update-end-author:scott date:20201222 for:【搜索】搜索查询组件，删除条件，默认下拉还是上次的缓存数据，不好 JT-191
       },
       callback(){
         this.$emit('change', this.selectedValue);
@@ -228,16 +186,7 @@
       },
       getCurrentDictOptions(){
         return this.options
-      },
-      getParentContainer(node){
-        if(typeof this.getPopupContainer === 'function'){
-          return this.getPopupContainer(node)
-        } else if(!this.popContainer){
-          return node.parentNode
-        }else{
-          return document.querySelector(this.popContainer)
-        }
-      },
+      }
 
     },
     model: {

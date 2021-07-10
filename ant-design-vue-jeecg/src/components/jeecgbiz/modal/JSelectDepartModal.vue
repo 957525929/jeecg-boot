@@ -1,19 +1,16 @@
 <template>
-  <j-modal
+  <a-modal
     title="选择部门"
     :width="modalWidth"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
     @cancel="handleCancel"
-    wrapClassName="j-depart-select-modal"
-    switchFullscreen
     cancelText="关闭">
     <a-spin tip="Loading..." :spinning="false">
       <a-input-search style="margin-bottom: 1px" placeholder="请输入部门名称按回车进行搜索" @search="onSearch" />
       <a-tree
         checkable
-        class="my-dept-select-tree"
         :treeData="treeData"
         :checkStrictly="true"
         @check="onCheck"
@@ -34,7 +31,7 @@
       </a-tree>
 
     </a-spin>
-  </j-modal>
+  </a-modal>
 </template>
 
 <script>
@@ -167,9 +164,7 @@
         if(!this.checkedKeys || this.checkedKeys.length==0){
           this.$emit("ok",'')
         }else{
-          let checkRow = this.getCheckedRows(this.checkedKeys)
-          let keyStr = this.checkedKeys.join(",")
-          this.$emit("ok", checkRow, keyStr)
+          this.$emit("ok",this.checkedRows,this.checkedKeys.join(","))
         }
         this.handleClear()
       },
@@ -241,11 +236,6 @@
 
 </script>
 
-<style lang="less" scoped>
-  // 限制部门选择树高度，避免部门太多时点击确定不便
-  .my-dept-select-tree{
-    height: 350px;
-    overflow-y: scroll;
-  }
+<style scoped>
 
 </style>

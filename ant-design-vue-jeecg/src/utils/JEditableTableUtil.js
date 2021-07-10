@@ -1,5 +1,3 @@
-import { getVmParentByName } from '@/utils/util'
-
 const FormTypes = {
   normal: 'normal',
   input: 'input',
@@ -14,12 +12,10 @@ const FormTypes = {
   popup:'popup',
   list_multi:"list_multi",
   sel_search:"sel_search",
-  sel_search_async:"sel_search_async",
   radio:'radio',
   checkbox_meta:"checkbox_meta",
   input_pop:'input_pop',
-  sel_depart: 'sel_depart',
-  sel_user: 'sel_user',
+
   slot: 'slot',
   hidden: 'hidden'
 }
@@ -78,36 +74,6 @@ export function validateFormAndTables(form, cases) {
   })
 
 }
-/**
- * 一次性验证主表单和所有的次表单(新版本)
- * @param form 主表单 form 对象
- * @param cases 接收一个数组，每项都是一个JEditableTable实例
- * @returns {Promise<any>}
- * @author sunjianlei
- */
-export function validateFormModelAndTables(form,values, cases) {
-
-  if (!(form && typeof form.validate === 'function')) {
-    throw `form 参数需要的是一个form对象，而传入的却是${typeof form}`
-  }
-  let options = {}
-  return new Promise((resolve, reject) => {
-    // 验证主表表单
-    form.validate((valid,obj) => {
-      valid ?resolve(values):reject({ error: VALIDATE_NO_PASSED })
-    })
-  }).then(values => {
-    Object.assign(options, { formValue: values })
-    // 验证所有子表的表单
-    return validateTables(cases)
-  }).then(all => {
-    Object.assign(options, { tablesValue: all })
-    return Promise.resolve(options)
-  }).catch(error => {
-    return Promise.reject(error)
-  })
-
-}
 
 /**
  * 验证并获取一个或多个表格的所有值
@@ -122,7 +88,7 @@ export function validateTables(cases, deleteTempId) {
   return new Promise((resolve, reject) => {
     let tables = []
     let index = 0;
-    if(!cases || cases.length === 0){
+    if(!cases || cases.length==0){
       resolve()
     }
     (function next() {
@@ -138,13 +104,7 @@ export function validateTables(cases, deleteTempId) {
       }, error => {
         // 出现未验证通过的表单，不再进行下一步校验，直接返回失败并跳转到该表格
         if (error === VALIDATE_NO_PASSED) {
-          // 尝试获取tabKey，如果在ATab组件内即可获取
-          let paneKey;
-          let tabPane = getVmParentByName(vm, 'ATabPane')
-          if (tabPane) {
-            paneKey = tabPane.$vnode.key
-          }
-          reject({error: VALIDATE_NO_PASSED, index, paneKey})
+          reject({ error: VALIDATE_NO_PASSED, index })
         }
         reject(error)
       })

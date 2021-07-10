@@ -1,5 +1,5 @@
 <template>
-  <a-popover trigger="contextmenu" v-model="visible" :placement="position" overlayClassName="j-input-pop">
+  <a-popover trigger="contextmenu" v-model="visible" :placement="position">
     <!--"(node) => node.parentNode.parentNode"-->
     <div slot="title">
       <span>{{ title }}</span>
@@ -7,11 +7,11 @@
         <a-icon type="close" @click="visible=false"/>
       </span>
     </div>
-    <a-input :value="inputContent" :disabled="disabled" @change="handleInputChange">
+    <a-input :value="inputContent" @change="handleInputChange">
       <a-icon slot="suffix" type="fullscreen" @click.stop="pop" />
     </a-input>
     <div slot="content">
-      <a-textarea ref="textarea" :value="inputContent" :disabled="disabled" @input="handleInputChange" :style="{ height: height + 'px', width: width + 'px' }"/>
+      <textarea :value="inputContent" @input="handleInputChange" :style="{ height: height + 'px', width: width + 'px' }"></textarea>
     </div>
   </a-popover>
 </template>
@@ -48,11 +48,7 @@
         type:String,
         default:'',
         required:false
-      },
-      disabled: {
-        type: Boolean,
-        default: false,
-      },
+      }
 
     },
     data(){
@@ -84,9 +80,6 @@
       },
       pop(){
         this.visible=true
-        this.$nextTick(() => {
-          this.$refs.textarea.focus()
-        })
       },
       getPopupContainer(node){
         if(!this.popContainer){

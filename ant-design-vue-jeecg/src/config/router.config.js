@@ -8,10 +8,10 @@ export const asyncRouterMap = [
 
   {
     path: '/',
-    name: 'dashboard',
+    name: 'planManage',
     component: TabLayout,
     meta: { title: '首页' },
-    redirect: '/dashboard/analysis',
+    redirect: '/planManage/planlist',
     children: [
 
       // // dashboard
@@ -308,17 +308,17 @@ export const constantRouterMap = [
       {
         path: 'register',
         name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/Register')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
       },
       {
         path: 'register-result',
         name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/RegisterResult')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
       },
       {
         path: 'alteration',
         name: 'alteration',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/alteration/Alteration')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Alteration')
       },
     ]
   },

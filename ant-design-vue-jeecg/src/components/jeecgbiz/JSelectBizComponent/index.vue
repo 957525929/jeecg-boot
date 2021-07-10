@@ -12,7 +12,7 @@
           :open="selectOpen"
           style="width: 100%;"
           @dropdownVisibleChange="handleDropdownVisibleChange"
-          @click.native="visible=(buttons || disabled ?visible:true)"
+          @click.native="visible=(buttons?visible:true)"
         />
       </slot>
     </a-col>
@@ -118,12 +118,10 @@
         deep: true,
         handler(val) {
           let rows = val.map(key => this.dataSourceMap[key])
+          this.$emit('select', rows)
           let data = val.join(',')
-          if (data !== this.value) {
-            this.$emit('select', rows)
-            this.$emit('input', data)
-            this.$emit('change', data)
-          }
+          this.$emit('input', data)
+          this.$emit('change', data)
         }
       }
     },

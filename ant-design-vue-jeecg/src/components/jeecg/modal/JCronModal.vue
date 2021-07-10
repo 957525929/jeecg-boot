@@ -1,6 +1,6 @@
 <template>
   <a-modal
-          title="cron表达式"
+          title="corn表达式"
           :width="modalWidth"
           :visible="visible"
           :confirmLoading="confirmLoading"
